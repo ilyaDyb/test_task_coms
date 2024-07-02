@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messages</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        #progress-bar {
+            width: 100%;
+            height: 30px;
+        }
+        .container-fluid {
+            padding: 0 50px;
+        }
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        th, td {
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1>Messages</h1>
+        <h2 id="status"></h2>
+        <progress id="progress-bar" max="100" value="0" class="progress-bar"></progress>
+        <table id="messages-table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Message Subject</th>
+                    <th style="width: 15%;">From</th>
+                    <th style="width: 10%;">From Email</th>
+                    <th style="width: 40%;">Text</th>
+                    <th style="width: 10%;">Attachments</th>
+                    <th style="width: 10%;">Date Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                    <tr>
+                        <td>{{ message.message_subject }}</td>
+                        <td>{{ message.message_from }}</td>
+                        <td>{{ message.message_from_email }}</td>
+                        <td>{{ message.message_text }}</td>
+                        <td>{{ message.attachments }}</td>
+                        <td>{{ message.message_date_recieve }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if allow %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const progressBar = document.getElementById("progress-bar");
+                const messagesTable = document.getElementById("messages-table");
+                const status = document.getElementById("status");
+
+                const ws = new WebSocket("ws://127.0.0.1:8000/ws/messages/");
+
+                ws.onopen = function() {
+                    console.log("WebSocket connection opened");
+                    status.innerHTML = "Чтение сообщений";
+                    ws.send(JSON.stringify({ "user_id": "{{ request.user.id }}", "resource": "{{ resource }}" }));
+                };
+
+                ws.onmessage = function(event) {
+                    console.log("Message received from server:", event.data);
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.total_messages) {
+                        progressBar.max = data.total_messages;
+                        progressBar.value = 0;
+                    } else {
+                        const row = messagesTable.insertRow(1);
+                        row.insertCell(0).innerText = data.message_subject;
+                        row.insertCell(1).innerText = data.message_from;
+                        row.insertCell(2).innerText = data.message_from_email;
+                        row.insertCell(3).innerText = data.message_text;
+                        row.insertCell(4).innerText = data.attachments;
+                        row.insertCell(5).innerText = data.message_date_recieve;
+
+                        status.innerHTML = "Получение сообщений";
+                        progressBar.value += 1;
+                        if (progressBar.value == progressBar.max) {
+                            status.innerHTML = "Все сообщения получены";
+                        }
+                    }
+                };
+
+                ws.onclose = function() {
+                    console.log("WebSocket connection closed");
+                };
+
+                ws.onerror = function(error) {
+                    console.error("WebSocket error:", error);
+                };
+            });
+        </script>
+    {% endif %}
+</body>
+</html>

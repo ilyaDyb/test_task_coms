@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Private Office</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="{% url "main:index" %}">Mail Manager</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'users:private_office' %}">Private Office <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'main:messages' %}">Messages</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Боковое меню -->
+            <div class="col-md-3">
+                <div class="list-group">
+                    <a href="#" class="list-group-item list-group-item-action active">
+                        Select Mail Provider
+                    </a>
+                    <a href="{% url "main:messages" %}?resource=mail" class="list-group-item list-group-item-action">Mail.ru</a>
+                    <a href="{% url "main:messages" %}?resource=gmail" class="list-group-item list-group-item-action">Gmail</a>
+                    <a href="#" class="list-group-item list-group-item-action">Yandex</a>
+                </div>
+            </div>
+
+            <!-- Форма для редактирования почтовых данных -->
+            <div class="col-md-9">
+                <h1>Private Office</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="mail_login">Mail.ru Login</label>
+                        <input type="email" class="form-control" id="mail_login" name="mail_login" value="{{ form.mail_login.value }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="mail_password_imap">Mail.ru IMAP Password</label>
+                        <input type="password" class="form-control" id="mail_password_imap" name="mail_password_imap" value="{{ form.mail_password_imap.value }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="gmail_login">Gmail Login</label>
+                        <input type="email" class="form-control" id="gmail_login" name="gmail_login" value="{{ form.gmail_login.value }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="gmail_password_imap">Gmail IMAP Password</label>
+                        <input type="password" class="form-control" id="gmail_password_imap" name="gmail_password_imap" value="{{ form.gmail_password_imap.value }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="yandex_login">Yandex Login</label>
+                        <input type="email" class="form-control" id="yandex_login" name="yandex_login" value="{{ form.yandex_login.value }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="yandex_password_imap">Yandex IMAP Password</label>
+                        <input type="password" class="form-control" id="yandex_password_imap" name="yandex_password_imap" value="{{ form.yandex_password_imap.value }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
